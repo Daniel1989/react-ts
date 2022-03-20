@@ -19,7 +19,7 @@
     "extract-intl": "node -r esm ./internals/scripts/extract-intl.js",
     "prebuild": "npm run build:clean",
     "build": "cross-env NODE_ENV=production webpack --config internals/webpack/webpack.prod.babel.js --color -p --progress --hide-modules --display-optimization-bailout",
-    "build:clean": "rimraf ./build",
+    "build:clean": "rimraf ./build1",
     "start": "cross-env NODE_ENV=development node server",
     "start:tunnel": "cross-env NODE_ENV=development ENABLE_TUNNEL=true node server",
     "start:production": "npm run test && npm run build && npm run start:prod",
@@ -61,7 +61,10 @@
     "babel-core": "7.0.0-bridge.0"
   },
   "dependencies": {
+    "@antv/data-set": "^0.11.8",
+    "@antv/g2": "^4.1.47",
     "@hot-loader/react-dom": "16.13.0",
+    "antd": "^4.19.2",
     "connected-react-router": "6.8.0",
     "fontfaceobserver": "2.1.0",
     "history": "4.10.1",

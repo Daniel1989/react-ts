@@ -7,22 +7,24 @@
  */
 
 import * as React from 'react';
-import { Helmet } from 'react-helmet-async';
+// import { Helmet } from 'react-helmet-async';
 import styled from 'styles/styled-components';
 import { Switch, Route } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
 
 import HomePage from 'containers/HomePage/Loadable';
+import LineChart from 'containers/LineChart';
+
 import FeaturePage from 'containers/FeaturePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
-import Header from 'components/Header';
-import Footer from 'components/Footer';
+// import Header from 'components/Header';
+// import Footer from 'components/Footer';
 
 import GlobalStyle from '../../global-styles';
 
 const AppWrapper = styled.div`
-  max-width: calc(768px + 16px * 2);
-  margin: 0 auto;
+  // max-width: calc(768px + 16px * 2);
+  // margin: 0 auto;
   display: flex;
   min-height: 100%;
   padding: 0 16px;
@@ -32,19 +34,20 @@ const AppWrapper = styled.div`
 function App() {
   return (
     <AppWrapper>
-      <Helmet
+      {/* <Helmet
         titleTemplate="%s - React.js Boilerplate"
         defaultTitle="React.js Boilerplate"
       >
         <meta name="description" content="A React.js Boilerplate application" />
-      </Helmet>
-      <Header />
+      </Helmet> */}
+      {/* <Header /> */}
       <Switch>
-        <Route exact path="/" component={HomePage} />
+        <Route exact path="/" component={LineChart} />
+        <Route path="/home" component={HomePage} />
         <Route path="/features" component={FeaturePage} />
         <Route component={NotFoundPage} />
       </Switch>
-      <Footer />
+      {/* <Footer /> */}
       <GlobalStyle />
     </AppWrapper>
   );
