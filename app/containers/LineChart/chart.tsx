@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styles/styled-components';
 import { Chart } from '@antv/g2';
 import request from 'utils/request';
-import { Collapse, Input, Select } from 'antd';
+import { Switch, Collapse, Input, Select } from 'antd';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -16,7 +16,8 @@ const DivWrapper = styled.div`
 
 const InputWrapper = styled.div`
   margin-bottom: 12px;
-  width: 120px;
+  display:flex;
+  align-items: center;
 `;
 
 
@@ -32,7 +33,8 @@ interface IProps {
     goodList: string[],
     contaierId: string,
     type: string,
- }
+    showChart: boolean
+}
 
 /**
  * 1. 加1分钟和1小时
@@ -46,6 +48,12 @@ const LineChart: React.FC<IProps> = (props) => {
     const [goodCode, setGoodCode] = useState(DEFAULT_GOOD);
     const [predictList, setPredictList] = useState([]);
     const [predictData, setPredictData] = useState(0);
+    const [showChart, setShowChart] = useState(props.showChart);
+
+    const [good, setGood] = useState("RB");
+    const [year, setYear] = useState("22");
+    const [month, setMonth] = useState("05");
+
 
     useEffect(() => {
         request(`http://127.0.0.1:8000/polls/${goodCode}/${type}`, {
@@ -62,7 +70,7 @@ const LineChart: React.FC<IProps> = (props) => {
 
     useEffect(() => {
         let chart: null | Chart = null;
-        if (data.length) {
+        if (data.length && showChart) {
             chart = new Chart({
                 container: contaierId,
                 autoFit: true,
@@ -107,25 +115,51 @@ const LineChart: React.FC<IProps> = (props) => {
         return () => {
             chart && chart.destroy();
         }
-    }, [data])
+    }, [data, showChart])
 
-    const handleChange = (value) => {
-        setGoodCode(value);
+    useEffect(() => {
+        setGoodCode(good + year + month);
+    }, [good, year, month])
+
+    const handleChange = (value, type) => {
+        if (type === 'good') {
+            setGood(value)
+        } else if (type === 'year') {
+            setYear(value)
+        } else if (type === 'month') {
+            setMonth(value)
+        }
     }
+
+    const yearList: string[] = ["15", "16", "18", "19", "20", "21", "22", "23", "24"];
+    const monthList: string[] = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
     return (
         <DivWrapper>
             <InputWrapper>
-                <Select defaultValue={DEFAULT_GOOD} style={{ width: 120 }} onChange={handleChange}>
+                <Select filterOption={(input, option) =>
+                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                } showSearch optionFilterProp="children" defaultValue={good} style={{ width: 120 }} onChange={(e) => handleChange(e, 'good')}>
                     {
-                        goodList.map((s)=><Option value={s}>{s}</Option>)
+                        goodList.map((s) => <Option value={s}>{s}</Option>)
+                    }
+                </Select>
+                <Select defaultValue={year} style={{ width: 120 }} onChange={(e) => handleChange(e, 'year')}>
+                    {
+                        yearList.map((s) => <Option value={s}>{s}</Option>)
+                    }
+                </Select>
+                <Select defaultValue={month} style={{ width: 120 }} onChange={(e) => handleChange(e, 'month')}>
+                    {
+                        monthList.map((s) => <Option value={s}>{s}</Option>)
                     }
                 </Select>
             </InputWrapper>
             <InputWrapper>
-                <Input onBlur={(e) => {
+                <Input style={{ width: '120px' }} onBlur={(e) => {
                     const newNum = parseInt(e.target.value)
                     setPredictData(isNaN(newNum) ? 0 : newNum)
                 }} defaultValue={predictData} />
+                <Switch style={{ marginLeft: '12px' }} onChange={(e) => setShowChart(e)} checkedChildren="展示图表" unCheckedChildren="关闭图表" defaultChecked />
             </InputWrapper>
             <div id={contaierId}></div>
             <Collapse defaultActiveKey={[]}>

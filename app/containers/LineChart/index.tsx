@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styles/styled-components';
 import request from 'utils/request';
 import LineChart from './chart';
-import { Select, Input, Divider } from 'antd';
+import { Select, Input, Divider, Switch } from 'antd';
 
 const DivWrapper = styled.div`
   padding-top: 12px;
@@ -24,6 +24,7 @@ enum LineTypeEnum {
  */
 const GoodChart: React.FC<IProps> = () => {
     const [goodList, setGoodList] = useState([]);
+    const [showChart, setShowChart] = useState(true);
     const [num, setNum] = useState(1);
     const [type, setType] = useState(LineTypeEnum.DAILY);
     useEffect(() => {
@@ -52,7 +53,7 @@ const GoodChart: React.FC<IProps> = () => {
 
     return (
         <DivWrapper>
-            <div style={{display: 'flex'}}>
+            <div style={{display: 'flex', alignItems:'center'}}>
                 <Input defaultValue={num} onChange={onChange} style={{ width: 200 }}/>
                 <Select value={type} style={{ width: 120 }} onChange={handleChange}>
                     <Option value={LineTypeEnum.DAILY}>日线</Option>
@@ -61,12 +62,13 @@ const GoodChart: React.FC<IProps> = () => {
                     <Option value={LineTypeEnum.MINUTE15}>15分钟线</Option>
                     <Option value={LineTypeEnum.MINUTE5}>5分钟线</Option>
                 </Select>
+                <Switch style={{marginLeft: '12px'}} onChange={(e)=>setShowChart(e)} checkedChildren="展示图表" unCheckedChildren="关闭图表" defaultChecked />
             </div>
             
             <Divider />
             <div style={{textAlign: 'center'}}>
                 {colArray.map((_s, index) => (
-                    <LineChart type={type} goodList={goodList} contaierId={`container${index}`} />
+                    <LineChart type={type} goodList={goodList} contaierId={`container${index}`} showChart={showChart}/>
                 ))}
             </div>
 
