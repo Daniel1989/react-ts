@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styles/styled-components';
 import request from 'utils/request';
 import LineChart from './chart';
+import Upload from './upload';
 import { Select, Input, Divider, Switch } from 'antd';
 
 const DivWrapper = styled.div`
@@ -53,6 +54,10 @@ const GoodChart: React.FC<IProps> = () => {
 
     return (
         <DivWrapper>
+            <div>
+                <Upload />
+            </div>
+            <Divider />
             <div style={{display: 'flex', alignItems:'center'}}>
                 <Input defaultValue={num} onChange={onChange} style={{ width: 200 }}/>
                 <Select value={type} style={{ width: 120 }} onChange={handleChange}>
