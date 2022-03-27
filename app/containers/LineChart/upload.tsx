@@ -30,14 +30,15 @@ const Uploader: React.FC<IProps> = () => {
           }
         },
       };
+
     return (
         <DivWrapper>
-            <Radio.Group onChange={(val)=>setPlace(val)} value={place}>
+            <Radio.Group onChange={(e)=>setPlace(e.target.value)} value={place}>
                 <Radio value='sh'>上海交易所</Radio>
                 <Radio value='zz'>郑州交易所</Radio>
                 <Radio value='dl'>大连交易所</Radio>
             </Radio.Group>
-            <Radio.Group onChange={(val)=>setType(val)} value={type}>
+            <Radio.Group onChange={(e)=>setType(e.target.value)} value={type}>
                 <Radio value='record'>日交易</Radio>
                 <Radio value='contract'>持仓</Radio>
                 <Radio value='storehouse'>仓单</Radio>
