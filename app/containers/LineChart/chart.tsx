@@ -33,7 +33,8 @@ interface IProps {
     goodList: string[],
     contaierId: string,
     type: string,
-    showChart: boolean
+    showChart: boolean,
+    online: boolean,
 }
 
 /**
@@ -42,7 +43,7 @@ interface IProps {
  */
 const DEFAULT_GOOD = 'AG2206'
 const LineChart: React.FC<IProps> = (props) => {
-    const { goodList, contaierId, type } = props;
+    const { goodList, contaierId, type, online } = props;
     const [data, setData] = useState([]);
     const [resultList, setResultList] = useState([]);
     const [goodCode, setGoodCode] = useState(DEFAULT_GOOD);
@@ -58,7 +59,7 @@ const LineChart: React.FC<IProps> = (props) => {
     useEffect(() => {
         request(`http://127.0.0.1:8000/polls/${goodCode}/${type}`, {
             method: 'post',
-            body: JSON.stringify({ data: predictData })
+            body: JSON.stringify({ data: predictData, source: online ? 'online' : 'db' })
         }).then((res: any) => {
             setData(res.trendData);
             setPredictList(res.predict);
@@ -66,7 +67,7 @@ const LineChart: React.FC<IProps> = (props) => {
         }).catch((e) => {
             console.log(e);
         })
-    }, [goodCode, predictData, type])
+    }, [goodCode, predictData, type, online])
 
     useEffect(() => {
         let chart: null | Chart = null;

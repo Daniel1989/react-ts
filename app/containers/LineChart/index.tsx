@@ -26,6 +26,7 @@ enum LineTypeEnum {
 const GoodChart: React.FC<IProps> = () => {
     const [goodList, setGoodList] = useState([]);
     const [showChart, setShowChart] = useState(true);
+    const [online, setOnline] = useState(true);
     const [num, setNum] = useState(1);
     const [type, setType] = useState(LineTypeEnum.DAILY);
     useEffect(() => {
@@ -67,13 +68,14 @@ const GoodChart: React.FC<IProps> = () => {
                     <Option value={LineTypeEnum.MINUTE15}>15分钟线</Option>
                     <Option value={LineTypeEnum.MINUTE5}>5分钟线</Option>
                 </Select>
-                <Switch style={{marginLeft: '12px'}} onChange={(e)=>setShowChart(e)} checkedChildren="展示图表" unCheckedChildren="关闭图表" defaultChecked />
+                <Switch style={{marginLeft: '12px'}} onChange={(e)=>setShowChart(e)} checkedChildren="展示图表" unCheckedChildren="关闭图表" checked={showChart} />
+                <Switch style={{marginLeft: '12px'}} onChange={(e)=>setOnline(e)} checkedChildren="使用在线数据" unCheckedChildren="不使用在线数据" checked={online} />
             </div>
             
             <Divider />
             <div style={{textAlign: 'center'}}>
                 {colArray.map((_s, index) => (
-                    <LineChart type={type} goodList={goodList} contaierId={`container${index}`} showChart={showChart}/>
+                    <LineChart type={type} goodList={goodList} contaierId={`container${index}`} showChart={showChart} online={online}/>
                 ))}
             </div>
 
