@@ -57,7 +57,7 @@ const LineChart: React.FC<IProps> = (props) => {
 
 
     useEffect(() => {
-        request(`http://127.0.0.1:8000/polls/${goodCode}/${type}`, {
+        request(`http://127.0.0.1:8000/polls/detail/${goodCode}/${type}`, {
             method: 'post',
             body: JSON.stringify({ data: predictData, source: online ? 'online' : 'db' })
         }).then((res: any) => {
