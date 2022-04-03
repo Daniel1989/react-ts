@@ -13,16 +13,20 @@ interface IProps { }
 
 enum LineTypeEnum {
     DAILY = 'daily',
-    MINUTE5 = 'minute_5',
-    MINUTE15 = 'minute_15',
-    MINUTE30 = 'minute_30',
-    HOUR = 'hour'
+    MINUTE5 = '5',
+    MINUTE15 = '15',
+    MINUTE30 = '30',
+    HOUR = '60'
 }
 
 /**
  * 1. 加1分钟和1小时
  * @returns 
  */
+const main_good_no_map = {
+
+}
+
 const GoodChart: React.FC<IProps> = () => {
     const [goodList, setGoodList] = useState([]);
     const [showChart, setShowChart] = useState(true);
@@ -30,12 +34,23 @@ const GoodChart: React.FC<IProps> = () => {
     const [num, setNum] = useState(1);
     const [type, setType] = useState(LineTypeEnum.DAILY);
     useEffect(() => {
-        request(`http://127.0.0.1:8000/polls/`).then((res: any) => {
-            setGoodList(res);
-        }).catch((e) => {
-            console.log(e);
-        })
-    }, [])
+        if(online) {
+            request(`http://127.0.0.1:8000/polls/`).then((res: any) => {
+                setGoodList(res.sort());
+            }).catch((e) => {
+                console.log(e);
+            })
+        } else {
+            request(`http://127.0.0.1:8000/polls/good/list`).then((res: any) => {
+                setGoodList(res.map(item=>item.code).sort());
+                res.forEach((item) => {
+                    main_good_no_map[item.code]=item.main_no
+                })
+            }).catch((e) => {
+                console.log(e);
+            })
+        }
+    }, [online])
 
     const colArray: number[] = [];
     for (let i = 0; i < num; i++) {
@@ -75,7 +90,8 @@ const GoodChart: React.FC<IProps> = () => {
             <Divider />
             <div style={{textAlign: 'center'}}>
                 {colArray.map((_s, index) => (
-                    <LineChart type={type} goodList={goodList} contaierId={`container${index}`} showChart={showChart} online={online}/>
+                    <LineChart type={type} goodList={goodList} 
+                    contaierId={`container${index}`} showChart={showChart} online={online} main_good_no_map={main_good_no_map} />
                 ))}
             </div>
 

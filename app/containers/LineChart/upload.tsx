@@ -22,8 +22,7 @@ const Uploader: React.FC<IProps> = () => {
   const [text, setText] = useState('');
   const [dateStr, setDateStr] = useState('');
   const [timeType, setTimeType] = useState('60');
-  const [goodList, setGoodList] = useState([])
-  const [selectedGood4SH, setSelectedGood4SH] = useState('');
+  const [goodList, setGoodList] = useState([]);
   const props = {
     name: 'file',
     action: `http://127.0.0.1:8000/polls/upload/${place}/${type}`,
@@ -48,7 +47,7 @@ const Uploader: React.FC<IProps> = () => {
     }
     request(`http://127.0.0.1:8000/polls/upload/${place}/${type}`, {
       method: 'post',
-      body: JSON.stringify({ data: text, place, date: dateStr, good: selectedGood4SH })
+      body: JSON.stringify({ data: text, place, date: dateStr })
     }).then((res: any) => {
       if (res.success) {
         message.success("提交成功")
@@ -145,7 +144,7 @@ const Uploader: React.FC<IProps> = () => {
   }
 
   return (
-      <Collapse defaultActiveKey={["1"]}>
+      <Collapse defaultActiveKey={[]}>
         <Panel header="数据同步" key="1">
     <DivWrapper>
         <Radio.Group onChange={(e) => setPlace(e.target.value)} value={place}>
@@ -158,20 +157,13 @@ const Uploader: React.FC<IProps> = () => {
           <Radio value='record'>日交易</Radio>
           <Radio value='contract'>持仓</Radio>
           <Radio value='storehouse'>仓单</Radio>
-          <Radio value='history'>单品种历史数据</Radio>
+          <Radio value='history'>品种历史数据</Radio>
         </Radio.Group>
-        {place === 'sh' && type == 'history' ? (
-          <Select showSearch optionFilterProp="children" style={{width:'120px'}} onChange={(e)=>{
-              setSelectedGood4SH(e)
-          }}>
-            {goodList.map((item)=>(<Option value={item.code}>{`${item.name}(${item.code})`}</Option>))}
-          </Select>
-        ) : null}
         <p />
         {
           type === 'storehouse' && (place === 'sh' || place === 'dl') ? (
             <div>
-              <Input.TextArea defaultValue={''} onChange={onChange} style={{ height: "120px" }} />
+              <Input.TextArea value={text} onChange={onChange} style={{ height: "120px" }} />
               <Calendar fullscreen={false} onChange={onPanelChange} />
               <Button style={{ marginTop: "12px" }} onClick={() => submit()}>提交</Button>
             </div>
