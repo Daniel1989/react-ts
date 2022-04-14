@@ -8,6 +8,14 @@ import Line from './line';
 const { Panel } = Collapse;
 const { Option } = Select;
 
+enum LineTypeEnum {
+    DAILY = 'daily',
+    MINUTE5 = '5',
+    MINUTE15 = '15',
+    MINUTE30 = '30',
+    HOUR = '60'
+}
+
 const DivWrapper = styled.div`
   padding-top: 20px;
   margin-bottom: 20px;
@@ -36,7 +44,9 @@ interface IProps {
     type: string,
     showChart: boolean,
     online: boolean,
-    main_good_no_map: {[key:string]: string}
+    main_good_no_map: {[key:string]: string},
+    fixConfigValue: {[key:string]: string},
+    fixCallback: Function,
 }
 
 /**
@@ -44,7 +54,8 @@ interface IProps {
  * @returns 
  */
 const LineChart: React.FC<IProps> = (props) => {
-    const { goodList, contaierId, type, online, main_good_no_map } = props;
+    const { goodList, contaierId, type, online, main_good_no_map, fixConfigValue, fixCallback } = props;
+    const [lineType, setLineType] = useState(type);
     const [data, setData] = useState([]);
     const [resultList, setResultList] = useState([]);
     const [predictList, setPredictList] = useState([]);
@@ -57,7 +68,7 @@ const LineChart: React.FC<IProps> = (props) => {
     const [goodCode, setGoodCode] = useState(good + year + month);
 
     useEffect(() => {
-        request(`http://127.0.0.1:8000/polls/${online ? 'detail' : 'detaildb'}/${goodCode}/${type}`, {
+        request(`http://127.0.0.1:8000/polls/${online ? 'detail' : 'detaildb'}/${goodCode}/${lineType}`, {
             method: 'post',
             body: JSON.stringify({ data: predictData, source: online ? 'online' : 'db' })
         }).then((res: any) => {
@@ -67,7 +78,13 @@ const LineChart: React.FC<IProps> = (props) => {
         }).catch((e) => {
             console.log(e);
         })
-    }, [goodCode, predictData, type, online])
+    }, [goodCode, predictData, lineType, online])
+
+    useEffect(()=>{
+        if(type!==lineType){
+            setLineType(type)
+        }
+    },[type])
 
     useEffect(() => {
         let chart: null | Chart = null;
@@ -129,6 +146,20 @@ const LineChart: React.FC<IProps> = (props) => {
         setGoodCode(good + year + month);
     }, [good, year, month])
 
+    useEffect(() => {
+        console.log("abcdefg")
+        console.log(fixConfigValue)
+        if(fixConfigValue["good"]) {
+            setGood(fixConfigValue["good"])
+        }
+        if(fixConfigValue["year"]) {
+            setYear(fixConfigValue["year"])
+        }
+        if(fixConfigValue["month"]) {
+            setMonth(fixConfigValue["month"])
+        }
+    }, [fixConfigValue])
+
     const handleChange = (value, type) => {
         if (type === 'good') {
             setGood(value)
@@ -141,6 +172,7 @@ const LineChart: React.FC<IProps> = (props) => {
         } else if (type === 'month') {
             setMonth(value)
         }
+        fixCallback(type, value)
     }
 
     const yearList: string[] = ["15", "16", "18", "19", "20", "21", "22", "23", "24"];
@@ -150,7 +182,7 @@ const LineChart: React.FC<IProps> = (props) => {
             <InputWrapper>
                 <Select filterOption={(input, option) =>
                     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                } showSearch optionFilterProp="children" defaultValue={good} style={{ width: 120 }} onChange={(e) => handleChange(e, 'good')}>
+                } showSearch optionFilterProp="children" value={good} style={{ width: 120 }} onChange={(e) => handleChange(e, 'good')}>
                     {
                         goodList.map((s) => <Option value={s}>{s}</Option>)
                     }
@@ -164,6 +196,13 @@ const LineChart: React.FC<IProps> = (props) => {
                     {
                         monthList.map((s) => <Option value={s}>{s}</Option>)
                     }
+                </Select>
+                <Select value={lineType} style={{ width: 120 }} onChange={(e)=>setLineType(e)}>
+                    <Option value={LineTypeEnum.DAILY}>日线</Option>
+                    <Option value={LineTypeEnum.HOUR}>1小时线</Option>
+                    <Option value={LineTypeEnum.MINUTE30}>30分钟线</Option>
+                    <Option value={LineTypeEnum.MINUTE15}>15分钟线</Option>
+                    <Option value={LineTypeEnum.MINUTE5}>5分钟线</Option>
                 </Select>
             </InputWrapper>
             <InputWrapper>

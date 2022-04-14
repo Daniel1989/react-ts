@@ -33,6 +33,10 @@ const GoodChart: React.FC<IProps> = () => {
     const [online, setOnline] = useState(true);
     const [num, setNum] = useState(1);
     const [type, setType] = useState(LineTypeEnum.DAILY);
+    const [fixedGood, setFixedCode] = useState(false);
+    const [fixConfig, setFixConfig] = useState({});
+    const [fixConfigValue, setFixConfigValue] = useState({});
+
     useEffect(() => {
         if(online) {
             request(`http://127.0.0.1:8000/polls/`).then((res: any) => {
@@ -68,6 +72,22 @@ const GoodChart: React.FC<IProps> = () => {
         setType(value);
     }
 
+    const handleSetFixConfig = (value, type) => {
+        setFixConfig({
+            ...fixConfig,
+            [type]: value
+        })
+    } 
+
+    const fixCallback = (type, value) => {
+        if(!!fixConfig[type] && fixConfigValue[type]!=value) {
+            setFixConfigValue({
+                ...fixConfigValue,
+                [type]: value
+            })
+        }
+    }
+
     return (
         <DivWrapper>
             <div>
@@ -85,12 +105,33 @@ const GoodChart: React.FC<IProps> = () => {
                 </Select>
                 <Switch style={{marginLeft: '12px'}} onChange={(e)=>setShowChart(e)} checkedChildren="展示图表" unCheckedChildren="关闭图表" checked={showChart} />
                 <Switch style={{marginLeft: '12px'}} onChange={(e)=>setOnline(e)} checkedChildren="使用在线数据" unCheckedChildren="不使用在线数据" checked={online} />
+                <Switch style={{marginLeft: '12px'}} onChange={(e)=>{
+                    setFixedCode(e);
+                    setFixConfig({});
+                    setFixConfigValue({})
+                }} checkedChildren="开启联动" unCheckedChildren="关闭联动" checked={fixedGood} />
+                <p />
+                {
+                    fixedGood ? (
+                        <div>
+                            <Switch style={{marginLeft: '12px'}} 
+                                onChange={(e)=>handleSetFixConfig(e, 'good')} 
+                                checkedChildren="固定品种" unCheckedChildren="不固定品种" checked={!!fixConfig['good']} />
+                            <Switch style={{marginLeft: '12px'}} 
+                                onChange={(e)=>handleSetFixConfig(e, 'year')} 
+                                checkedChildren="固定年份" unCheckedChildren="不固定年份" checked={!!fixConfig['year']} />
+                            <Switch style={{marginLeft: '12px'}} 
+                                onChange={(e)=>handleSetFixConfig(e, 'month')} 
+                                checkedChildren="固定月份" unCheckedChildren="不固定月份" checked={!!fixConfig['month']} />
+                        </div>
+                    ) : null
+                }
             </div>
             
             <Divider />
             <div style={{textAlign: 'center'}}>
                 {colArray.map((_s, index) => (
-                    <LineChart type={type} goodList={goodList} 
+                    <LineChart type={type} goodList={goodList} fixConfigValue={fixConfigValue} fixCallback={fixCallback}
                     contaierId={`container${index}`} showChart={showChart} online={online} main_good_no_map={main_good_no_map} />
                 ))}
             </div>
